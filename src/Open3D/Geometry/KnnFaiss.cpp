@@ -31,6 +31,8 @@
 #include "Open3D/Geometry/KnnFaiss.h"
 
 #include <faiss/IndexFlat.h>
+#include <faiss/gpu/GpuIndexFlat.h>
+#include <faiss/gpu/StandardGpuResources.h>
 #include <faiss/impl/AuxIndexStructures.h>
 
 #include "Open3D/Core/Device.h"
@@ -73,8 +75,19 @@ bool KnnFaiss::SetTensorData(const Tensor &tensor) {
         return false;
     }
 
+    //bool check = tensor.GetBlob()->GetDevice().GetType() == Device::DeviceType::CUDA;
+    //std::cout << check << std::endl;
+    data_.resize(dataset_size_ * dimension_);
+    if (tensor.GetBlob()->GetDevice().GetType() == Device::DeviceType::CUDA) {
+        std::cout << "gpu tensor" << std::endl;
+        faiss::gpu::StandardGpuResources res;
+        index.reset(new faiss::gpu::GpuIndexFlatL2(&res, dimension_));
+    }
+    else {
+        index.reset(new faiss::IndexFlatL2(dimension_));
+    }
+
     void *_data_ptr = tensor.GetBlob()->GetDataPtr();
-    index.reset(new faiss::IndexFlatL2(dimension_));
     index->add(dataset_size_, (float *)_data_ptr);
     return true;
 }

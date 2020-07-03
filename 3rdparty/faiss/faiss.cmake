@@ -14,7 +14,7 @@ if (BUILD_CUDA_MODULE)
         ext_faiss
         PREFIX faiss
         SOURCE_DIR ${Open3D_3RDPARTY_DIR}/faiss/faiss
-        CONFIGURE_COMMAND ${Open3D_3RDPARTY_DIR}/faiss/faiss/configure --with-cuda=/usr/local/cuda-10.1  --prefix=${CMAKE_CURRENT_BINARY_DIR}/libfaiss-install
+        CONFIGURE_COMMAND ${Open3D_3RDPARTY_DIR}/faiss/faiss/configure --with-cuda=${CUDA_TOOLKIT_ROOT_DIR}  --prefix=${CMAKE_CURRENT_BINARY_DIR}/libfaiss-install
         BUILD_COMMAND ${MAKE}
         BUILD_IN_SOURCE 1
     )
